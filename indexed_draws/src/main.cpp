@@ -12,6 +12,7 @@
 using namespace GLPractice;
 
 GLProgram* g_program = NULL;
+Mesh* g_mesh = NULL;
 GLuint g_vao = 0;
 GLuint g_ibo = 0;
 GLFWwindow* g_window = NULL;
@@ -22,6 +23,10 @@ void release(){
     if(!g_program){
         delete g_program;
         g_program = NULL;
+    }
+    if(!g_mesh){
+        delete g_mesh;
+        g_mesh = NULL;
     }
 }
 
@@ -41,7 +46,7 @@ void loadMeshData() {
         0.0f, 0.0f, 1.0f,
     };
 
-    unsigned indexData[] {
+    GLuint indexData[] {
         // default is counter-clockwise
         // use your right hand to judge
         0, 1, 2,
@@ -49,6 +54,10 @@ void loadMeshData() {
         0, 1, 3,
         1, 3, 2,
     };
+
+    g_mesh = new Mesh();
+    g_mesh->setVertexData(vertexData, 12);
+    g_mesh->setIndexData(indexData, 12);
 
     // bind the VAO, setup the attributes, then unbind it
     // this should be down before binding buffer objects
