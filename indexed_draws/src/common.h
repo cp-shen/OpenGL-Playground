@@ -42,10 +42,10 @@ class Mesh {
     public:
         Mesh();
         ~Mesh();
-        void setVertexData(const float* data, unsigned count);
-        void setIndexData(const unsigned* data, unsigned count);
-        void getVertexData(float* buf);
-        void getIndexData(unsigned* buf);
+        void setVertexData(const GLfloat* data, unsigned count);
+        void setIndexData(const GLuint* data, unsigned count);
+        void getVertexData(GLfloat* buf);
+        void getIndexData(GLuint* buf);
         unsigned getVertexCount();
         unsigned getIndexCount();
         GLuint vao();

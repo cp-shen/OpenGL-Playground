@@ -50,7 +50,7 @@ void loadMeshData() {
     };
 
     GLuint indexData[] {
-        // default is counter-clockwise
+        // by default it is counter-clockwise
         // use your right hand to judge
         0, 1, 2,
         0, 3, 2,

@@ -23,7 +23,7 @@ Mesh::~Mesh() {
     unload();
 }
 
-void Mesh::setVertexData(const float* data, unsigned count) {
+void Mesh::setVertexData(const GLfloat* data, unsigned count) {
     if(!data || count <= 0)
         throw std::runtime_error("No vertex data");
 
@@ -35,7 +35,7 @@ void Mesh::setVertexData(const float* data, unsigned count) {
     memcpy(_vertexData, data, count * sizeof(float));
 }
 
-void Mesh::setIndexData(const unsigned* data, unsigned count) {
+void Mesh::setIndexData(const GLuint* data, unsigned count) {
     if(!data || count <= 0)
         throw std::runtime_error("No index data");
 
@@ -47,11 +47,11 @@ void Mesh::setIndexData(const unsigned* data, unsigned count) {
     memcpy(_indexData, data, count * sizeof(unsigned));
 }
 
-void Mesh::getVertexData(float* buf) {
+void Mesh::getVertexData(GLfloat* buf) {
     memcpy(buf, _vertexData, _vertexCount * sizeof(float));
 }
 
-void Mesh::getIndexData(unsigned* buf) {
+void Mesh::getIndexData(GLuint* buf) {
     memcpy(buf, _vertexData, _vertexCount * sizeof(unsigned));
 }
 
@@ -68,8 +68,8 @@ void Mesh::load() {
     if(!_vertexData)
         throw std::runtime_error("no vertex data in mesh to load");
 
-    //if(!_indexData)
-        //throw std::runtime_error("no index data in mesh to load");
+    if(!_indexData)
+        throw std::runtime_error("no index data in mesh to load");
 
     unload();
 
@@ -80,11 +80,9 @@ void Mesh::load() {
     glBindBuffer(GL_ARRAY_BUFFER, _vbo);
     glBufferData(GL_ARRAY_BUFFER, _vertexCount * sizeof(GLfloat), _vertexData, GL_STATIC_DRAW);
 
-    if(!_indexData) {
-        glGenBuffers(1, &_ebo);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, _indexCount * sizeof(GLuint), _indexData, GL_STATIC_DRAW);
-    }
+    glGenBuffers(1, &_ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, _indexCount * sizeof(GLuint), _indexData, GL_STATIC_DRAW);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);

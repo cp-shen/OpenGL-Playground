@@ -28,7 +28,7 @@ void MeshRenderer::load() {
         throw std::runtime_error("no shader program in MeshRenderer");
     }
 
-    if(_mesh->vao() == 0) {
+    if(!_mesh->vao() || !_mesh->vbo() || !_mesh->ebo()) {
         _mesh->load();
     }
 
