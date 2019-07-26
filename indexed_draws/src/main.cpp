@@ -7,14 +7,13 @@
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
-#define VERT_SHADER_POS_ATTRIB_NAME "pos"
 
 using namespace GLPractice;
 
 GLProgram* g_program = NULL;
 Mesh* g_mesh = NULL;
-GLuint g_vao = 0;
-GLuint g_ibo = 0;
+MeshRenderer* g_meshRenderer = NULL;
+
 GLFWwindow* g_window = NULL;
 std::string g_vShaderPath = "../shaders/vShader.vert";
 std::string g_fShaderPath = "../shaders/fShader.frag";
@@ -27,6 +26,10 @@ void release(){
     if(!g_mesh){
         delete g_mesh;
         g_mesh = NULL;
+    }
+    if(!g_meshRenderer) {
+        delete g_meshRenderer;
+        g_meshRenderer = NULL;
     }
 }
 
@@ -56,29 +59,11 @@ void loadMeshData() {
     };
 
     g_mesh = new Mesh();
-    g_mesh->setVertexData(vertexData, 12);
-    g_mesh->setIndexData(indexData, 12);
+    g_mesh->setVertexData(vertexData, sizeof(vertexData) / sizeof(GLfloat));
+    g_mesh->setIndexData(indexData, sizeof(indexData) / sizeof(GLuint));
+    g_mesh->load();
 
-    // bind the VAO, setup the attributes, then unbind it
-    // this should be down before binding buffer objects
-    glGenVertexArrays(1, &g_vao);
-    glBindVertexArray(g_vao);
-    glEnableVertexAttribArray(g_program->GetAttribLocation(VERT_SHADER_POS_ATTRIB_NAME));
-    glVertexAttribPointer(g_program->GetAttribLocation(VERT_SHADER_POS_ATTRIB_NAME), 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glBindVertexArray(0);
-
-    // put data into VBO
-    GLuint tmp_vbo = 0;
-    glGenBuffers(1, &tmp_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, tmp_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    // put data into IBO
-    glGenBuffers(0, &g_ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexData), indexData, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    g_meshRenderer = new MeshRenderer(g_mesh, g_program);
 }
 
 void render() {
@@ -88,16 +73,16 @@ void render() {
 
     // setup defore drawing
     glUseProgram(g_program->getObjectId());
-    glBindVertexArray(g_vao);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_ibo);
+    glBindVertexArray(g_mesh->vao());
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_mesh->ebo());
 
     // draw some primitives
-    //glDrawArrays(GL_TRIANGLES, 0, 3);
+    //glDrawArrays(GL_TRIANGLES, 0, 4);
     glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
 
     // reset after drawing
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glUseProgram(0);
 }
 
@@ -174,8 +159,7 @@ int main(int argc, char* argv[]) {
             std::cout << "No shader path provided." << std::endl
                 << "Use default shader path:" << std::endl
                 << g_vShaderPath << std::endl
-                << g_fShaderPath << std::endl
-                ;
+                << g_fShaderPath << std::endl;
         }
 
         appMain();

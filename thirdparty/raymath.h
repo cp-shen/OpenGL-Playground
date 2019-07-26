@@ -42,8 +42,8 @@
 #ifndef RAYMATH_H
 #define RAYMATH_H
 
-//#define RAYMATH_STANDALONE      // NOTE: To use raymath as standalone lib, just uncomment this line
-//#define RAYMATH_HEADER_ONLY     // NOTE: To compile functions as static inline, uncomment this line
+#define RAYMATH_STANDALONE      // NOTE: To use raymath as standalone lib, just uncomment this line
+#define RAYMATH_HEADER_ONLY     // NOTE: To compile functions as static inline, uncomment this line
 
 #ifndef RAYMATH_STANDALONE
     #include "raylib.h"           // Required for structs: Vector3, Matrix
@@ -56,7 +56,7 @@
 #if defined(RAYMATH_IMPLEMENTATION)
     #if defined(_WIN32) && defined(BUILD_LIBTYPE_SHARED)
         #define RMDEF __declspec(dllexport) extern inline // We are building raylib as a Win32 shared library (.dll).
-    #elif defined(_WIN32) && defined(USE_LIBTYPE_SHARED) 
+    #elif defined(_WIN32) && defined(USE_LIBTYPE_SHARED)
         #define RMDEF __declspec(dllimport)         // We are using raylib as a Win32 shared library (.dll)
     #else
         #define RMDEF extern inline // Provide external definition
@@ -113,7 +113,7 @@
         float y;
         float z;
     } Vector3;
-    
+
     // Quaternion type
     typedef struct Quaternion {
         float x;

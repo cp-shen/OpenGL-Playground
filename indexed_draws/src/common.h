@@ -2,8 +2,10 @@
 # define COMMON_H
 
 #include <GL/glew.h>
-#include <glm/glm.hpp>
 #include <string.h>
+#include "../../thirdparty/raymath.h"
+
+#define VERT_SHADER_POS_ATTRIB_NAME "pos"
 
 namespace GLPractice {
 
@@ -46,29 +48,45 @@ class Mesh {
         void getIndexData(unsigned* buf);
         unsigned getVertexCount();
         unsigned getIndexCount();
-        glm::vec3 getWorldPosition();
-        void setWorldPosition(const glm::vec3& position);
+        GLuint vao();
+        GLuint vbo();
+        GLuint ebo();
+        void load();
+        void unload();
+
     private:
         unsigned _vertexCount;
         unsigned _indexCount;
         GLfloat* _vertexData;
         GLuint* _indexData;
-        glm::vec3 _worldPosition;
+        GLuint _vao;
+        GLuint _vbo;
+        GLuint _ebo;
 
         // disable copying
         Mesh& operator=(const Mesh& other);
         Mesh(const Mesh& other);
 };
 
+struct Transform {
+    Vector3 scale;
+    Quaternion rotation;
+    Vector3 translation;
+};
+
 class MeshRenderer {
     public:
-        MeshRenderer();
+        MeshRenderer(Mesh*, GLProgram*);
         ~MeshRenderer();
-        MeshRenderer(const MeshRenderer& other);
-        MeshRenderer& operator=(const MeshRenderer& other);
-        void feedMesh(Mesh* mesh);
+        void load();
+        void unload();
     private:
         Mesh* _mesh;
+        GLProgram* _shaderProgram;
+
+        // disable copying
+        MeshRenderer(const MeshRenderer& other);
+        MeshRenderer& operator=(const MeshRenderer& other);
 };
 
 } // namespace GLPractice
