@@ -116,7 +116,7 @@ void updateUniform() {
     float16 modelMatrix = MatrixToFloatV(g_modelTransform.toMatrix());
     glUniformMatrix4fv(modelUniformLoc, 1, GL_FALSE, modelMatrix.v);
 
-    float16 viewMatrix = MatrixToFloatV(MatrixRotateX(-25.0f * DEG2RAD));
+    float16 viewMatrix = MatrixToFloatV(g_camera.viewMatrix());
     glUniformMatrix4fv(viewUniformLoc, 1, GL_FALSE, viewMatrix.v);
 
     float16 projMatrix = MatrixToFloatV(g_camera.projectionMatrix());
@@ -189,6 +189,9 @@ void appInit(){
     glfwGetFramebufferSize(g_window, &bufWidth, &bufHeight);
     glViewport(0, 0, bufWidth, bufHeight);
     g_camera.aspect = (GLfloat) bufWidth / (GLfloat) bufHeight;
+    g_camera.direction.x = 0.0f;
+    g_camera.direction.y = -1.0f;
+    g_camera.direction.z = -2.0f;
 
 
     printGLInfo();

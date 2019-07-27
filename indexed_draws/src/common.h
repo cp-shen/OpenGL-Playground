@@ -116,8 +116,16 @@ struct Camera {
         float near;
         float far;
 
+        Vector3 position;
+        Vector3 direction;
+        Vector3 worldUp;
+
         Matrix projectionMatrix() {
             return MatrixPerspective(fov, aspect, near, far);
+        }
+
+        Matrix viewMatrix() {
+            return MatrixLookAt(position, Vector3Add(position, direction), worldUp);
         }
 
         Camera() {
@@ -125,6 +133,12 @@ struct Camera {
             aspect = 16.0f / 9.0f;
             near = 0.1f;
             far = 100.0f;
+
+            position = Vector3Zero();
+            direction = Vector3Zero();
+            direction.z = -1.0f;
+            worldUp = Vector3Zero();
+            worldUp.y = 1.0f;
         }
 };
 
