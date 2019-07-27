@@ -117,28 +117,34 @@ struct Camera {
         float far;
 
         Vector3 position;
-        Vector3 direction;
-        Vector3 worldUp;
+        Quaternion rotation;
 
         Matrix projectionMatrix() {
             return MatrixPerspective(fov, aspect, near, far);
         }
 
         Matrix viewMatrix() {
-            return MatrixLookAt(position, Vector3Add(position, direction), worldUp);
+            Vector3 forwardDir = Vector3Zero();
+            forwardDir.z = 1;
+            forwardDir = Vector3RotateByQuaternion(forwardDir, rotation);
+
+            Vector3 target = Vector3Add(position, forwardDir);
+
+            Vector3 upDir = Vector3Zero();
+            upDir.y = 1;
+            forwardDir = Vector3RotateByQuaternion(upDir, rotation);
+
+            return MatrixLookAt(position, target, upDir);
         }
 
         Camera() {
-            fov = 45 * DEG2RAD;
-            aspect = 16.0f / 9.0f;
+            fov = 45.0f * DEG2RAD;
+            aspect = 4.0f / 3.0f;
             near = 0.1f;
             far = 100.0f;
 
             position = Vector3Zero();
-            direction = Vector3Zero();
-            direction.z = -1.0f;
-            worldUp = Vector3Zero();
-            worldUp.y = 1.0f;
+            rotation = QuaternionIdentity();
         }
 };
 

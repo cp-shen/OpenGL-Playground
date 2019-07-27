@@ -73,7 +73,7 @@ void loadMeshData() {
 
     GLuint indexData[] {
         // by default it is counter-clockwise
-        // use your right hand to judge
+        // use right hand to judge
         7, 3, 2,
         7, 2, 6,
         6, 2, 5,
@@ -110,11 +110,14 @@ void updateUniform() {
     g_modelTransform.rotation =
         QuaternionMultiply(g_modelTransform.rotation, QuaternionFromAxisAngle(yAxis, 0.05f * DEG2RAD));
 
-    g_modelTransform.translation.z = -5.0f;
+    g_modelTransform.translation.z = 5.0f;
     g_modelTransform.translation.y = -3.0f;
 
     float16 modelMatrix = MatrixToFloatV(g_modelTransform.toMatrix());
     glUniformMatrix4fv(modelUniformLoc, 1, GL_FALSE, modelMatrix.v);
+
+    // get user input to update camera info
+    // Todo
 
     float16 viewMatrix = MatrixToFloatV(g_camera.viewMatrix());
     glUniformMatrix4fv(viewUniformLoc, 1, GL_FALSE, viewMatrix.v);
@@ -184,15 +187,17 @@ void appInit(){
 
     // enable depth testing
     glEnable(GL_DEPTH_TEST);
+
     // setup viewport
     int bufWidth, bufHeight;
     glfwGetFramebufferSize(g_window, &bufWidth, &bufHeight);
     glViewport(0, 0, bufWidth, bufHeight);
-    g_camera.aspect = (GLfloat) bufWidth / (GLfloat) bufHeight;
-    g_camera.direction.x = 0.0f;
-    g_camera.direction.y = -1.0f;
-    g_camera.direction.z = -2.0f;
 
+    // setup camera
+    g_camera.aspect = (GLfloat) bufWidth / (GLfloat) bufHeight;
+    Vector3 xAxis = Vector3Zero();
+    xAxis.x = 1;
+    g_camera.rotation = QuaternionFromAxisAngle(xAxis, 30.0f * DEG2RAD);
 
     printGLInfo();
     loadShaders();
