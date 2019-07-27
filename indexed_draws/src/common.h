@@ -68,10 +68,30 @@ class Mesh {
         Mesh(const Mesh& other);
 };
 
+inline Matrix operator*(const Matrix& left, const Matrix& right) {
+    return MatrixMultiply(right, left);
+}
+
 struct Transform {
-    Vector3 scale;
-    Quaternion rotation;
-    Vector3 translation;
+    public:
+        Vector3 scale;
+        Quaternion rotation;
+        Vector3 translation;
+
+        Transform() {
+            rotation = QuaternionIdentity();
+            scale = Vector3One();
+            translation = Vector3Zero();
+        }
+
+        Matrix toMatrix() {
+            Matrix mScale = MatrixScale(scale.x, scale.y, scale.z);
+            Matrix mRotate = QuaternionToMatrix(rotation);
+            Matrix mTranslate = MatrixTranslate(translation.x, translation.y, translation.z);
+
+            Matrix result = mTranslate * mRotate * mScale;
+            return result;
+        }
 };
 
 class MeshRenderer {
@@ -87,6 +107,25 @@ class MeshRenderer {
         // disable copying
         MeshRenderer(const MeshRenderer& other);
         MeshRenderer& operator=(const MeshRenderer& other);
+};
+
+struct Camera {
+    public:
+        float fov; // field of view, in radians
+        float aspect; // width / height;
+        float near;
+        float far;
+
+        Matrix projectionMatrix() {
+            return MatrixPerspective(fov, aspect, near, far);
+        }
+
+        Camera() {
+            fov = 45 * DEG2RAD;
+            aspect = 16.0f / 9.0f;
+            near = 0.1f;
+            far = 100.0f;
+        }
 };
 
 } // namespace GLPractice

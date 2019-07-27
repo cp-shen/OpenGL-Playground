@@ -13,6 +13,8 @@ using namespace GLPractice;
 GLProgram* g_program = NULL;
 Mesh* g_mesh = NULL;
 MeshRenderer* g_meshRenderer = NULL;
+Transform g_modelTransform;
+Camera g_camera;
 
 GLFWwindow* g_window = NULL;
 std::string g_vShaderPath = "../shaders/vShader.vert";
@@ -31,6 +33,20 @@ void release(){
         delete g_meshRenderer;
         g_meshRenderer = NULL;
     }
+}
+
+void printMatrix(Matrix mat) {
+    std::cout << "in printMatrix:" << std::endl;
+
+    float16 arr = MatrixToFloatV(mat);
+
+    for(unsigned i = 0; i < 16; i++) {
+        if(i % 4 == 0)
+            std::cout << std::endl;
+
+        std::cout << arr.v[i];
+    }
+    std::cout << std::endl;
 }
 
 void loadShaders() {
@@ -64,6 +80,34 @@ void loadMeshData() {
     g_mesh->load();
 
     g_meshRenderer = new MeshRenderer(g_mesh, g_program);
+}
+
+void updateUniform() {
+    glUseProgram(g_program->getObjectId());
+
+    GLint modelUniformLoc = g_program->GetUniformLocation("model");
+    GLint viewUniformLoc = g_program->GetUniformLocation("view");
+    GLint projUniformLoc = g_program->GetUniformLocation("projection");
+
+    Vector3 yAxis;
+    yAxis.x = 0.0f;
+    yAxis.y = 1.0f;
+    yAxis.z = 0.0f;
+    g_modelTransform.rotation =
+        QuaternionMultiply(g_modelTransform.rotation, QuaternionFromAxisAngle(yAxis, 0.05f * DEG2RAD));
+
+    g_modelTransform.translation.z = -5.0f;
+
+    float16 modelMatrix = MatrixToFloatV(g_modelTransform.toMatrix());
+    glUniformMatrix4fv(modelUniformLoc, 1, GL_FALSE, modelMatrix.v);
+
+    float16 viewMatrix = MatrixToFloatV(MatrixIdentity());
+    glUniformMatrix4fv(viewUniformLoc, 1, GL_FALSE, viewMatrix.v);
+
+    float16 projMatrix = MatrixToFloatV(g_camera.projectionMatrix());
+    glUniformMatrix4fv(projUniformLoc, 1, GL_FALSE, projMatrix.v);
+
+    glUseProgram(0);
 }
 
 void render() {
@@ -123,13 +167,13 @@ void appInit(){
     if(!GLEW_VERSION_3_3)
         throw std::runtime_error("OpenGL 3.3 API is not avaliable.");
 
+    // enable depth testing
+    glEnable(GL_DEPTH_TEST);
     // setup viewport
     int bufWidth, bufHeight;
     glfwGetFramebufferSize(g_window, &bufWidth, &bufHeight);
     glViewport(0, 0, bufWidth, bufHeight);
 
-    // enable depth testing
-    glEnable(GL_DEPTH_TEST);
 
     printGLInfo();
     loadShaders();
@@ -142,6 +186,7 @@ void appMain() {
     while(!glfwWindowShouldClose(g_window)) {
         glfwPollEvents();
         render();
+        updateUniform();
         glfwSwapBuffers(g_window);
     }
 

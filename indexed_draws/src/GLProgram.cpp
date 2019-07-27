@@ -1,5 +1,6 @@
 #include "common.h"
 #include <stdexcept>
+#include <string>
 
 using namespace GLPractice;
 
@@ -75,6 +76,11 @@ GLint GLProgram::GetAttribLocation(const GLchar* attribName) const {
         throw std::runtime_error("attribName is null");
 
     GLint location = glGetAttribLocation(_objectId, attribName);
+
+    if(location < 0)
+        throw std::runtime_error("Attrib " + std::string(attribName) +
+                " not found in shaders");
+
     return location;
 }
 
@@ -82,6 +88,11 @@ GLint GLProgram::GetUniformLocation(const GLchar* uniformName) const {
     if(!uniformName)
         throw std::runtime_error("uniformName is null");
 
-    GLint location = glGetAttribLocation(_objectId, uniformName);
+    GLint location = glGetUniformLocation(_objectId, uniformName);
+
+    if(location < 0)
+        throw std::runtime_error("Uniform " + std::string(uniformName) +
+                " not found in shaders");
+
     return location;
 }
