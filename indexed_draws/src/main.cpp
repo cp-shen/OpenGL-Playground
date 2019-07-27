@@ -58,20 +58,34 @@ void loadShaders() {
 }
 
 void loadMeshData() {
+    // a cube
     GLfloat vertexData[] {
         0.0f, 0.0f, 0.0f,
         1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
+        1.0f, 0.0f, 1.0f,
         0.0f, 0.0f, 1.0f,
+
+        0.0f, 1.0f, 0.0f,
+        1.0f, 1.0f, 0.0f,
+        1.0f, 1.0f, 1.0f,
+        0.0f, 1.0f, 1.0f,
     };
 
     GLuint indexData[] {
         // by default it is counter-clockwise
         // use your right hand to judge
-        0, 1, 2,
-        0, 3, 2,
-        0, 1, 3,
-        1, 3, 2,
+        7, 3, 2,
+        7, 2, 6,
+        6, 2, 5,
+        5, 2, 1,
+        4, 5, 1,
+        4, 1, 0,
+        7, 4, 3,
+        3, 4, 0,
+        4, 7, 6,
+        4, 6, 5,
+        3, 0, 2,
+        2, 0, 1,
     };
 
     g_mesh = new Mesh();
@@ -97,11 +111,12 @@ void updateUniform() {
         QuaternionMultiply(g_modelTransform.rotation, QuaternionFromAxisAngle(yAxis, 0.05f * DEG2RAD));
 
     g_modelTransform.translation.z = -5.0f;
+    g_modelTransform.translation.y = -3.0f;
 
     float16 modelMatrix = MatrixToFloatV(g_modelTransform.toMatrix());
     glUniformMatrix4fv(modelUniformLoc, 1, GL_FALSE, modelMatrix.v);
 
-    float16 viewMatrix = MatrixToFloatV(MatrixIdentity());
+    float16 viewMatrix = MatrixToFloatV(MatrixRotateX(-25.0f * DEG2RAD));
     glUniformMatrix4fv(viewUniformLoc, 1, GL_FALSE, viewMatrix.v);
 
     float16 projMatrix = MatrixToFloatV(g_camera.projectionMatrix());
@@ -122,7 +137,7 @@ void render() {
 
     // draw some primitives
     //glDrawArrays(GL_TRIANGLES, 0, 4);
-    glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, 3 * 12, GL_UNSIGNED_INT, 0);
 
     // reset after drawing
     glBindVertexArray(0);
@@ -173,6 +188,7 @@ void appInit(){
     int bufWidth, bufHeight;
     glfwGetFramebufferSize(g_window, &bufWidth, &bufHeight);
     glViewport(0, 0, bufWidth, bufHeight);
+    g_camera.aspect = (GLfloat) bufWidth / (GLfloat) bufHeight;
 
 
     printGLInfo();
