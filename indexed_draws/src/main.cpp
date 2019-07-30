@@ -334,6 +334,11 @@ void appInit(){
     // default: remain front face, which is counter-clockwise
     glEnable(GL_CULL_FACE);
 
+    // enable blending
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
     // setup viewport
     int bufWidth, bufHeight;
     glfwGetFramebufferSize(g_window, &bufWidth, &bufHeight);
